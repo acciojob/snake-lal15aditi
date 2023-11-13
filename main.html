@@ -20,15 +20,23 @@
     .food {
       background-color: red;
     }
+
+    .scoreBoard {
+      text-align: center;
+      font-size: 24px;
+    }
   </style>
 </head>
 <body>
   <div id="gameContainer"></div>
+  <div class="scoreBoard">Score: <span id="score">0</span></div>
   <script>
     const gameContainer = document.getElementById("gameContainer");
     const snake = [{ x: 2, y: 2 }];
     const food = { x: 5, y: 5 };
     let direction = "right";
+    let score = 0;
+    const scoreElement = document.getElementById("score");
 
     function createPixel(x, y, className) {
       const pixel = document.createElement("div");
@@ -68,7 +76,8 @@
 
       if (head.x === food.x && head.y === food.y) {
         // Snake ate the food
-        // Update the score here
+        score += 10;
+        scoreElement.textContent = score;
         // Generate new food
         food.x = Math.floor(Math.random() * 40) + 1;
         food.y = Math.floor(Math.random() * 40) + 1;
