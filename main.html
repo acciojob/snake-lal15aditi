@@ -37,10 +37,11 @@
     const gridSize = 40;
     const pixelSize = 10;
 
-    let snake = [{ x: 20, y: 1 }];
+    let snake = [{ x: 20, y: 20 }];
     let direction = "right";
     let score = 0;
     let food = getRandomPosition();
+    let moving = false;
 
     function createPixel(x, y, className) {
       const pixel = document.createElement("div");
@@ -68,6 +69,11 @@
     }
 
     function moveSnake() {
+      if (moving) {
+        return;
+      }
+      moving = true;
+
       const head = Object.assign({}, snake[0]);
 
       switch (direction) {
@@ -85,20 +91,36 @@
           break;
       }
 
+      snake.unshift(head);
+
       // Check if the snake eats the food
       if (head.x === food.x && head.y === food.y) {
         score += 10;
         scoreElement.textContent = score;
-        snake.unshift(head);
         food = getRandomPosition();
       } else {
-        // Remove the last segment of the snake
         snake.pop();
-        snake.unshift(head);
       }
+
+      // Check if the game is over (hits the wall or itself)
+      if (
+        head.x < 1 ||
+        head.x > gridSize ||
+        head.y < 1 ||
+        head.y > gridSize ||
+        snake.slice(1).some((segment) => segment.x === head.x && segment.y === head.y)
+      ) {
+        clearInterval(gameInterval);
+        alert("Game Over!");
+      }
+
+      moving = false;
     }
 
     function changeDirection(event) {
+      if (moving) {
+        return;
+      }
       switch (event.key) {
         case "ArrowUp":
           if (direction !== "down") direction = "up";
@@ -119,11 +141,12 @@
 
     function gameLoop() {
       moveSnake();
-      renderGame();
-      setTimeout(gameLoop, 100);
+		renderGame();
     }
 
-    gameLoop();
+    const gameInterval = setInterval(gameLoop, 100);
+
   </script>
 </body>
 </html>
+     
