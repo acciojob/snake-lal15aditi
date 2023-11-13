@@ -32,11 +32,15 @@
   <div class="scoreBoard">Score: <span id="score">0</span></div>
   <script>
     const gameContainer = document.getElementById("gameContainer");
-    const snake = [{ x: 2, y: 2 }];
-    const food = { x: 5, y: 5 };
+    const scoreElement = document.getElementById("score");
+
+    const gridSize = 40;
+    const pixelSize = 10;
+
+    let snake = [{ x: 20, y: 1 }];
     let direction = "right";
     let score = 0;
-    const scoreElement = document.getElementById("score");
+    let food = getRandomPosition();
 
     function createPixel(x, y, className) {
       const pixel = document.createElement("div");
@@ -46,11 +50,20 @@
       return pixel;
     }
 
+    function getRandomPosition() {
+      return {
+        x: Math.floor(Math.random() * gridSize) + 1,
+        y: Math.floor(Math.random() * gridSize) + 1
+      };
+    }
+
     function renderGame() {
       gameContainer.innerHTML = "";
+
       snake.forEach((segment) => {
         gameContainer.appendChild(createPixel(segment.x, segment.y, "pixel"));
       });
+
       gameContainer.appendChild(createPixel(food.x, food.y, "food"));
     }
 
@@ -72,17 +85,16 @@
           break;
       }
 
-      snake.unshift(head);
-
+      // Check if the snake eats the food
       if (head.x === food.x && head.y === food.y) {
-        // Snake ate the food
         score += 10;
         scoreElement.textContent = score;
-        // Generate new food
-        food.x = Math.floor(Math.random() * 40) + 1;
-        food.y = Math.floor(Math.random() * 40) + 1;
+        snake.unshift(head);
+        food = getRandomPosition();
       } else {
+        // Remove the last segment of the snake
         snake.pop();
+        snake.unshift(head);
       }
     }
 
@@ -108,7 +120,6 @@
     function gameLoop() {
       moveSnake();
       renderGame();
-      // Call this function recursively with a setTimeout to control the game speed.
       setTimeout(gameLoop, 100);
     }
 
